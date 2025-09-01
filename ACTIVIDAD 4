@@ -45,19 +45,19 @@ def prepare_training_data(num_samples=8):  # ← MUY pocos datos
 
 def quick_test():
     """Prueba ultra-rápida"""
-    print("🚀 Iniciando prueba rápida...")
+    print("Iniciando prueba rápida...")
     print(f"Muestras: {N_SAMPLES}")
     
     # Modelo mini
     model = create_lightweight_model()
-    print("✅ Modelo creado")
+    print("Modelo creado")
     
     # Datos mini
     X_train, y_train = prepare_training_data(4)  # Solo 4 ejemplos
-    print(f"✅ Datos preparados: {X_train.shape}")
+    print(f"Datos preparados: {X_train.shape}")
     
     # Entrenamiento super-rápido
-    print("⏳ Entrenando (paciencia...)")
+    print("Entrenando (paciencia...)")
     history = model.fit(
         X_train, y_train,
         epochs=3,           # ← SOLO 3 ÉPOCAS
@@ -65,7 +65,7 @@ def quick_test():
         validation_split=0.25,
         verbose=1
     )
-    print("✅ Entrenamiento completado")
+    print("Entrenamiento completado")
     
     # Prueba rápida
     clean_test, noisy_test = generate_synthetic_signal()
@@ -87,7 +87,7 @@ def quick_test():
 if __name__ == "__main__":
     try:
         model = quick_test()
-        print("🎉 ¡Éxito! El modelo funciona")
+        print("¡Éxito! El modelo funciona")
     except Exception as e:
-        print(f"❌ Error: {e}")
-        print("\n💡 Solución: Ejecutar en Google Colab con GPU")
+        print(f"Error: {e}")
+        print("\n Solución: Ejecutar en Google Colab con GPU")
