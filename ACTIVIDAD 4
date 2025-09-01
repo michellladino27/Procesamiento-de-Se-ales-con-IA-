@@ -1,0 +1,93 @@
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras import layers, models
+import matplotlib.pyplot as plt
+from scipy import signal
+import warnings
+warnings.filterwarnings('ignore')
+
+# CONFIGURACIÓN SEGURA
+SAMPLE_RATE = 8000  # ← Reducir frecuencia de muestreo
+DURATION = 2.0      # ← Reducir duración
+N_SAMPLES = int(SAMPLE_RATE * DURATION)  # 16000 muestras (manejable)
+
+def create_lightweight_model():
+    """Modelo ultra-ligero para prueba rápida"""
+    model = models.Sequential([
+        layers.Input(shape=(N_SAMPLES, 1)),
+        layers.Conv1D(8, kernel_size=101, activation='relu', padding='same'),
+        layers.Conv1D(4, kernel_size=51, activation='relu', padding='same'),
+        layers.Conv1D(1, kernel_size=101, activation='tanh', padding='same')
+    ])
+    model.compile(optimizer='adam', loss='mse')
+    return model
+
+def generate_synthetic_signal():
+    """Señal más simple"""
+    t = np.linspace(0, DURATION, N_SAMPLES)
+    clean_signal = 0.7 * np.sin(2 * np.pi * 100 * t) + 0.3 * np.sin(2 * np.pi * 300 * t)
+    noise = 0.3 * np.random.randn(N_SAMPLES)
+    noisy_signal = clean_signal + noise
+    
+    # Normalizar
+    clean_signal = clean_signal / np.max(np.abs(clean_signal))
+    noisy_signal = noisy_signal / np.max(np.abs(noisy_signal))
+    
+    return clean_signal, noisy_signal
+
+def prepare_training_data(num_samples=8):  # ← MUY pocos datos
+    X_train, y_train = [], []
+    for _ in range(num_samples):
+        clean, noisy = generate_synthetic_signal()
+        X_train.append(noisy.reshape(-1, 1))
+        y_train.append(clean.reshape(-1, 1))
+    return np.array(X_train), np.array(y_train)
+
+def quick_test():
+    """Prueba ultra-rápida"""
+    print("🚀 Iniciando prueba rápida...")
+    print(f"Muestras: {N_SAMPLES}")
+    
+    # Modelo mini
+    model = create_lightweight_model()
+    print("✅ Modelo creado")
+    
+    # Datos mini
+    X_train, y_train = prepare_training_data(4)  # Solo 4 ejemplos
+    print(f"✅ Datos preparados: {X_train.shape}")
+    
+    # Entrenamiento super-rápido
+    print("⏳ Entrenando (paciencia...)")
+    history = model.fit(
+        X_train, y_train,
+        epochs=3,           # ← SOLO 3 ÉPOCAS
+        batch_size=2,       # ← Batch pequeño
+        validation_split=0.25,
+        verbose=1
+    )
+    print("✅ Entrenamiento completado")
+    
+    # Prueba rápida
+    clean_test, noisy_test = generate_synthetic_signal()
+    denoised = model.predict(noisy_test.reshape(1, -1, 1), verbose=0)[0, :, 0]
+    
+    # Gráfica simple
+    t = np.linspace(0, DURATION, N_SAMPLES)
+    plt.figure(figsize=(10, 6))
+    plt.plot(t, clean_test, 'b-', label='Limpia', alpha=0.7)
+    plt.plot(t, noisy_test, 'r-', label='Con ruido', alpha=0.5)
+    plt.plot(t, denoised, 'g-', label='Filtrada', alpha=0.8)
+    plt.legend()
+    plt.title('Resultado del Filtrado (Versión Lite)')
+    plt.show()
+    
+    return model
+
+# EJECUCIÓN
+if __name__ == "__main__":
+    try:
+        model = quick_test()
+        print("🎉 ¡Éxito! El modelo funciona")
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        print("\n💡 Solución: Ejecutar en Google Colab con GPU")
